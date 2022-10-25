@@ -1,7 +1,11 @@
 import requests
 from termcolor import colored
+import numpy as np
+
 Whale_contract_address = '0x175A8FF49660fd7c168a77142C22389d4430b876'
 OpenSea_contract_address = '0x495f947276749Ce646f68AC8c248420045cb7b5e'
+
+unique = True # To print only unqiue ad
 
 url = f"https://api.transpose.io/nft/sales-by-account?account_address={Whale_contract_address}&role=all&order=asc&limit=100"
 
@@ -26,7 +30,10 @@ for i in range(total_sales):
 
 # Note that the i-th buyer in the list bought the i-th NFT in the tokenId list
 print(colored("List of buyers:","green"))
-print(*buyers, sep="\n")
+if unique:
+    print(*np.unique(np.array(buyers)), sep="\n")
+else:
+    print(*buyers, sep="\n")
 print("##########################################")
 
 # Print list of TokenIDs
@@ -46,8 +53,11 @@ for tok_id in tokenId:
         owners.append(0)
 
 print(colored("List of all whale owners:","green"))
-owners_fil = filter(lambda x: x != 0, owners)
-print(*owners_fil, sep="\n")
+owners_fil = list(filter(lambda x: x != 0, owners))
+if unique:
+    print(*np.unique(np.array(owners_fil)), sep="\n")
+else:
+    print(*owners_fil, sep="\n")
 print("##########################################")
 # Now we filter out the buyers who are not owners
 holders = []
@@ -60,10 +70,16 @@ for i in range(total_sales):
 
 print(colored(f"Number of holders: {len(holders)}", "green"))
 print(colored("List of Holders:", "green"))
-print(*holders, sep="\n")
+if unique:
+    print(*np.unique(np.array(holders)), sep="\n")
+else:
+    print(*holders, sep="\n")
 print("##########################################")
-sellers = filter(lambda x: x != Whale_contract_address, sellers)
+sellers = list(filter(lambda x: x != Whale_contract_address, sellers))
 print(colored("List of people who sold their whale:","green"))
-print(*sellers, sep="\n")
+if unique:
+    print(*np.unique(np.array(sellers)), sep="\n")
+else:
+    print(*sellers, sep="\n")
 
 
