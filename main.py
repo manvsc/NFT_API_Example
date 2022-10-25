@@ -1,5 +1,5 @@
 import requests
-
+from termcolor import colored
 Whale_contract_address = '0x175A8FF49660fd7c168a77142C22389d4430b876'
 OpenSea_contract_address = '0x495f947276749Ce646f68AC8c248420045cb7b5e'
 
@@ -15,7 +15,7 @@ response = requests.get(url, headers=headers)
 r = response.json()
 
 total_sales = len(r['results'])
-print(f"Total sales: {total_sales}")
+print(colored(f"Total sales: {total_sales}","green"))
 
 # Create buyers list and tokenId list:
 buyers = []
@@ -25,15 +25,16 @@ for i in range(total_sales):
     tokenId.append(r['results'][i]['token_id'])
 
 # Note that the i-th buyer in the list bought the i-th NFT in the tokenId list
-print("List of buyers:")
+print(colored("List of buyers:","green"))
 print(*buyers, sep="\n")
+print("##########################################")
 
 # Print list of TokenIDs
 # print("List of TokenIDs:")
 # print(*tokenId, sep="\n")
 
 # Check if primary buyers still hold the NFT:
-print("Checking holders ...")
+print(colored("Checking owners, holders and sellers ...","green"))
 owners = []
 for tok_id in tokenId:
     url2 = f"https://api.transpose.io/nft/owners-by-token-id?contract_address={OpenSea_contract_address}&token_id={tok_id}&limit=100"
@@ -44,14 +45,25 @@ for tok_id in tokenId:
     else:
         owners.append(0)
 
+print(colored("List of all whale owners:","green"))
+owners_fil = filter(lambda x: x != 0, owners)
+print(*owners_fil, sep="\n")
+print("##########################################")
 # Now we filter out the buyers who are not owners
 holders = []
+sellers = []
 for i in range(total_sales):
     if buyers[i] == owners[i]:
         holders.append(buyers[i])
+    else:
+        sellers.append(buyers[i])
 
-print(f"Number of holders: {len(holders)}")
-print("List of Holders:")
+print(colored(f"Number of holders: {len(holders)}", "green"))
+print(colored("List of Holders:", "green"))
 print(*holders, sep="\n")
+print("##########################################")
+sellers = filter(lambda x: x != Whale_contract_address, sellers)
+print(colored("List of people who sold their whale:","green"))
+print(*sellers, sep="\n")
 
 
